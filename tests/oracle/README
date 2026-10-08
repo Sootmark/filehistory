@@ -1,0 +1,15 @@
+plaso.tsv.gz: what plaso (the log2timeline/plaso:20260720 Docker image) reads
+from tests/fixtures/plaso/Catalog1.edb with its esedb/file_history plugin, one
+line per event, sorted: identifier, parent identifier, original filename, file
+attributes, USN, the time as a FILETIME (empty for "Not a time") and the
+time's description. Written from plaso's output, not from this crate.
+
+On a Linux host with Docker, Catalog1.edb (uncompressed) in /tmp/smo/fh/in/:
+
+    sudo docker run --rm -v /tmp/smo/fh:/data log2timeline/plaso:20260720 log2timeline --status_view none -q --parsers 'esedb/file_history' --storage-file /data/out.plaso /data/in
+    sudo docker run --rm -v /tmp/smo/fh:/data log2timeline/plaso:20260720 psort --status_view none -q -o json_line -w /data/out.jsonl /data/out.plaso
+
+then, here:
+
+    python3 -I tests/oracle/plaso_tsv.py out.jsonl > tests/oracle/plaso.tsv
+    gzip -9n tests/oracle/plaso.tsv
